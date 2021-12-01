@@ -17,7 +17,6 @@ const QualitiesListPage = () => {
   }, []);
 
   const handleEdit = (param) => {
-    console.log(param);
     history.push(`/edit/${param}`);
   };
 
