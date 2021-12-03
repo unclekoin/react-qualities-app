@@ -9,7 +9,6 @@ const EditForm = ({ data, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(form);
-    console.log(form);
   };
 
   const handleChange = (target) => {
