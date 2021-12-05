@@ -1,31 +1,44 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
-import httpService from '../services/http.service';
 import EditForm from '../components/ui/editForm';
+import qualityService from '../services/quality.service';
 
 const EditQualityPage = () => {
   const [quality, setQuality] = useState(null);
+  const [errors, setErrors] = useState({message: '', status: ''});
   const { id } = useParams();
-  const qualityEndPoint = `http://localhost:4000/api/v1/quality/${id}`;
 
-  const handleSubmit = async (data) => {
+  const updateQuality = async (content) => {
     try {
-      await httpService
-        .put(qualityEndPoint, data)
-        .then((res) => console.log(res.data.content));
+      const data = await qualityService.update(id, content);
+      return data.content;
     } catch (error) {
-      console.log('Expected error');
+      const { message, status } = error.response.data;
+      setErrors({ message, status });
+      toast.error(`Error ${errors.status}: ${errors.message}`);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await httpService.get(qualityEndPoint);
-      setQuality(data.content);
-    };
+  const getQuality = async (id) => {
+    try {
+      const data = await qualityService.get(id);
+      return data.content;
 
-    fetchData();
-  }, [id, qualityEndPoint]);
+    } catch (error) {
+      const { message, status } = error.response.data;
+      setErrors({ message, status });
+      toast.error(`Error ${errors.status}: ${errors.message}`);
+    }
+  };
+
+  const handleSubmit = async (data) => {
+    updateQuality(data);
+  };
+
+  useEffect(() => {
+    getQuality(id).then((data) => setQuality(data));
+  }, [id]);
 
   return (
     <>
