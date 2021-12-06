@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
-import EditForm from '../components/ui/editForm';
 import qualityService from '../services/quality.service';
+import QualityForm from '../components/ui/qualityForm';
 
 const EditQualityPage = () => {
   const [quality, setQuality] = useState(null);
@@ -20,7 +20,7 @@ const EditQualityPage = () => {
     }
   };
 
-  const getQuality = async (id) => {
+  const getQuality = useCallback(async (id) => {
     try {
       const data = await qualityService.get(id);
       return data.content;
@@ -30,7 +30,7 @@ const EditQualityPage = () => {
       setErrors({ message, status });
       toast.error(`Error ${errors.status}: ${errors.message}`);
     }
-  };
+  }, [errors]);
 
   const handleSubmit = async (data) => {
     updateQuality(data);
@@ -38,13 +38,13 @@ const EditQualityPage = () => {
 
   useEffect(() => {
     getQuality(id).then((data) => setQuality(data));
-  }, [id]);
+  }, [id, getQuality]);
 
   return (
     <>
       <h1>Edit Quality Page</h1>{' '}
       {quality ? (
-        <EditForm data={quality} onSubmit={handleSubmit} />
+        <QualityForm data={quality} onSubmit={handleSubmit} />
       ) : (
         <h3>Loading...</h3>
       )}
