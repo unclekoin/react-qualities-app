@@ -1,16 +1,23 @@
-import React from "react";
-import QualityForm from "../components/ui/qualityForm";
-const AddQualityPage = () => {
-    const handleSubmit = async (data) => {
-        console.log(data);
-    };
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import QualityForm from '../components/ui/qualityForm';
+import { useQualities } from '../hooks/useQualities';
 
-    return (
-        <>
-            <h1>Add Quality</h1>
-            <QualityForm onSubmit={handleSubmit} />
-        </>
-    );
+const AddQualityPage = () => {
+  const history = useHistory();
+  const { addQuality } = useQualities();
+  const handleSubmit = async (data) => {
+    addQuality(data).then((data) => {
+      if (data) history.push('/');
+    });
+  };
+
+  return (
+    <>
+      <h1>Add Quality</h1>
+      <QualityForm onSubmit={handleSubmit} />
+    </>
+  );
 };
 
 export default AddQualityPage;
