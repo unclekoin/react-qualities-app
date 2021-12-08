@@ -20,9 +20,7 @@ export const QualitiesProvider = ({ children }) => {
         setQualities(content);
         setLoading(false);
       } catch (error) {
-        const { message, status } = error.response.data;
-        setErrors({ message, status });
-        toast.error(`Error ${errors.status}: ${errors.message}`);
+        errorCatcher(error);
       }
     };
     getQualities();
@@ -43,8 +41,7 @@ export const QualitiesProvider = ({ children }) => {
       );
       return content;
     } catch (error) {
-      const { message, status } = error.response.data;
-      setErrors({ message, status });
+      errorCatcher(error);
     }
   };
 
@@ -54,14 +51,43 @@ export const QualitiesProvider = ({ children }) => {
       setQualities((prevState) => [...prevState, content]);
       return content;
     } catch (error) {
-      const { message, status } = error.response.data;
-      setErrors({ message, status });
+      errorCatcher(error);
     }
   };
 
+  const deleteQuality = async (id) => {
+    try {
+      const { content } = await qualityService.delete(id);
+      setQualities((prevState) =>
+        prevState.filter((item) => item._id !== content._id)
+      );
+      return content;
+    } catch (error) {
+      errorCatcher(error);
+    }
+  };
+
+  function errorCatcher(error) {
+    const { message, status } = error.response.data;
+    setErrors({ message, status });
+  }
+
+  useEffect(() => {
+    if (errors !== null) {
+      toast.error(`Status ${errors.status}. ${errors.message}`);
+      setErrors(null);
+    }
+  }, [errors]);
+
   return (
     <QualitiesContext.Provider
-      value={{ qualities, getQuality, updateQuality, addQuality }}
+      value={{
+        qualities,
+        getQuality,
+        updateQuality,
+        addQuality,
+        deleteQuality,
+      }}
     >
       {!isLoading ? children : <h3>Loading...</h3>}
     </QualitiesContext.Provider>
